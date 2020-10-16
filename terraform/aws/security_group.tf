@@ -2,6 +2,9 @@ resource "aws_security_group" "my_service_web_server_sg" {
   name        = "web_server"
   description = "Allow http and ssh"
   vpc_id      = aws_vpc.my_service.id
+  tags = {
+    Name = "my_service_web_server_sg"
+  }
 }
 
 resource "aws_security_group_rule" "my_service_sg_in_http" {
