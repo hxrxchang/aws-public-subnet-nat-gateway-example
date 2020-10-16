@@ -19,3 +19,16 @@ resource "aws_instance" "my_service" {
     Name = "my_service"
   }
 }
+
+resource "aws_instance" "external_service" {
+  ami                         = data.aws_ssm_parameter.amzn2_ami.value
+  instance_type               = "t2.micro"
+  key_name                    = aws_key_pair.auth.id
+  associate_public_ip_address = true
+  subnet_id                   = aws_subnet.external_service_public_1a.id
+  vpc_security_group_ids      = [aws_security_group.external_service_web_server_sg.id]
+
+  tags = {
+    Name = "external_service"
+  }
+}
