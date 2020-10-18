@@ -57,9 +57,10 @@ resource "aws_security_group_rule" "external_service_sg_in_http" {
   from_port = 80
   to_port   = 80
   protocol  = "tcp"
-  // TODO: external_serviceのHTTP接続はmy_serviceのサブネットのNAT Gatewayからのみ許可するように変更
+  // my_serviceのサブネットのNAT GatewayのEIPからのみ許可
   cidr_blocks = [
-    "0.0.0.0/0"
+    "${aws_eip.my_service_1a.public_ip}/32"
+    # "0.0.0.0/0"
   ]
 
   security_group_id = aws_security_group.external_service_web_server_sg.id
