@@ -27,6 +27,22 @@ resource "aws_internet_gateway" "my_service" {
   }
 }
 
+resource "aws_eip" "my_service_1a" {
+  vpc = true
+  tags = {
+    Name = "my_service_1a"
+  }
+}
+
+resource "aws_nat_gateway" "my_service_nat_1a" {
+  subnet_id     = aws_subnet.my_service_public_1a.id
+  allocation_id = aws_eip.my_service_1a.id
+
+  tags = {
+    Name = "my_service_nat_1a"
+  }
+}
+
 resource "aws_route_table" "my_service_public" {
   vpc_id = aws_vpc.my_service.id
 
@@ -39,6 +55,12 @@ resource "aws_route" "my_service_public" {
   destination_cidr_block = "0.0.0.0/0"
   route_table_id         = aws_route_table.my_service_public.id
   gateway_id             = aws_internet_gateway.my_service.id
+}
+
+resource "aws_route" "my_service_to_external" {
+  destination_cidr_block = "${aws_instance.external_service.public_ip}/32"
+  route_table_id         = aws_route_table.my_service_public.id
+  nat_gateway_id         = aws_nat_gateway.my_service_nat_1a.id
 }
 
 resource "aws_route_table_association" "my_service_public_1a" {
